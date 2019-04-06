@@ -3,4 +3,4 @@ project(cpp_simple_DB)
 
 set(CMAKE_CXX_STANDARD 11)
 
-add_executable(cpp_simple_DB main.cpp)
+add_executable(cpp_simple_DB main.cpp db/btnode.hpp db/kvnode.hpp db/btree.hpp db/db.hpp)
