@@ -1,1 +1,0 @@
-{"name":"database","tables":[{"data":[{"key":"key_1","value":{"foo":"bar"}},{"key":"key_2","value":{"foo":"bar"}}],"name":"table"},{"data":[{"key":"key_1","value":{"foo":"bar","table":2}},{"key":"key_2","value":{"foo":"bar","table":2}}],"name":"table2"}]}

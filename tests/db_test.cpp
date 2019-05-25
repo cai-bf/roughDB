@@ -36,11 +36,14 @@ TEST_CASE("db test") {
         REQUIRE(db.count() == 0);
         data["foo"] = "bar";
         REQUIRE_NOTHROW(db.insert("foo", data));
+        REQUIRE(db.get("foo") == data);
         REQUIRE_NOTHROW(db.update("foo", data));
         REQUIRE_NOTHROW(db.updateOrInsert("test", data));
         REQUIRE_NOTHROW(db.remove("test"));
         REQUIRE(db.exist("foo") == true);
         REQUIRE_NOTHROW(db.traverse());
+        REQUIRE(db.get("foo") == data);
+        REQUIRE(db.get("not-exist") == NULL);
         json result;
         REQUIRE_NOTHROW(db.select(result));
         std::cout << result << std::endl;

@@ -36,6 +36,9 @@ TEST_CASE("BTree test") {
     REQUIRE_NOTHROW(tree.updateOrInsert(KVNode("1", data)));
     REQUIRE_NOTHROW(tree.updateOrInsert(KVNode("0", data)));
     REQUIRE_NOTHROW(tree.remove(KVNode("4", data))); // test remove
+    REQUIRE_NOTHROW(tree.update(KVNode("1", data)));
+    REQUIRE(tree.get("1") == data);
+    REQUIRE(tree.get("5") == NULL);
     REQUIRE_NOTHROW(tree.traverse());
 
     REQUIRE(tree.count() == 4); // test count
