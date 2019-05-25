@@ -1,4 +1,9 @@
-const DEFAULT_ORDER = 6000;
+#include <iostream>
+#include <fstream>
+#include <map>
+#include <string>
+#include "btnode.hpp"
+const int DEFAULT_ORDER = 6000;
 
 template <typename T>
 class BTree {
@@ -41,7 +46,11 @@ public:
     void updateOrInsert(T key) {
         if(!root)
             insert(key);
-        root->updateOrInsert(key);
+        else if (exist(key)) {
+            update(key);
+        } else {
+            insert(key);
+        }
         return;
     }
 
@@ -65,12 +74,6 @@ public:
         return;
     }
 
-    T find(T key) {
-        if (!root)
-            return NULL;
-        return root->find(key);
-    }
-
     void traverse() {
         if(root != NULL)
             root->traverse();
@@ -87,6 +90,10 @@ public:
         if (!root)
             return 0;
         return root->count();
+    }
+
+    json get(std::string key) {
+        return root->get(key);
     }
 
     void dump(std::ostream &out) {

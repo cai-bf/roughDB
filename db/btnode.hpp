@@ -7,7 +7,7 @@ public:
     bool isLeaf;
 
     BTNode(int order, bool isLeaf):order(order),keyNum(0),isLeaf(isLeaf) {
-        this->children = new BTNode *[order]{};
+        this->children = new BTNode *[order];
         this->keys = new T[order - 1];
     }
 
@@ -38,8 +38,9 @@ public:
                 if(key > keys[i + 1])
                     ++i;
             }
+            children[i + 1]->insert(key);
         }
-        children[i + 1]->insert(key);
+
         return;
     }
 
@@ -131,7 +132,7 @@ public:
         }
 
         borrow->keys[0] = keys[index - 1];
-        keys[index - 1] = lend->keyNum[lend->keyNum - 1];
+        keys[index - 1] = lend->keys[lend->keyNum - 1];
 
         lend->keyNum--;
         borrow->keyNum++;
@@ -246,38 +247,6 @@ public:
         return;
     }
 
-    void updateOrInsert(T key) {
-        int i = keyNum - 1;
-        if (isLeaf) {
-            if (exist(key)) {
-                update(key);
-                return;
-            }
-
-            while (i >= 0 && key < keys[i]) {
-                keys[i+1] = keys[i];
-                --i;
-            }
-            keys[i+1] = key;
-            ++keyNum;
-        } else {
-            while (i >= 0 && key < keys[i])
-                --i;
-            if (key == keys[i]) {
-                update(key);
-                return;
-            }
-            if (children[i + 1]->keyNum == order - 1) {
-                split(i + 1, children[i + 1]);
-                if(key > keys[i + 1])
-                    ++i;
-            }
-        }
-        children[i + 1]->updateOrInsert(key);
-        return;
-    }
-
-
     void traverse() {
         for (int i = 0; i < keyNum; ++i) {
             if (!isLeaf)
@@ -297,17 +266,6 @@ public:
         if (isLeaf)
             return false;
         return children[i]->exist(key);
-    }
-
-    T find(T &key) {
-        int i = 0;
-        while (i < keyNum && keys[i] < key)
-            ++i;
-        if (i < keyNum && keys[i] == key)
-            return keys[i];
-        if (isLeaf)
-            return NULL;
-        return children[i]->find(key);
     }
 
     void select(json &data) {
@@ -333,6 +291,25 @@ public:
         return sum;
     }
 
+    json get(std::string key) {
+        if (isLeaf) {
+            for (int i = 0; i < keyNum; ++i) {
+                if(key == keys[i].key)
+                    return keys[i].value;
+            }
+            return NULL;
+        } else {
+            for (int i = 0; i < keyNum; ++i) {
+                if (key == keys[i].key)
+                    return keys[i].value;
+                if (key < keys[i].key) {
+                    return children[i]->get(key);
+                }
+            }
+            return children[keyNum]->get(key);
+        }
+    }
+
     void dump(std::ostream &out) {
         for (int i = 0; i < keyNum; ++i) {
             if (!isLeaf)
@@ -342,6 +319,6 @@ public:
         if (!isLeaf)
             children[keyNum]->dump(out);
         return;
+    
     }
-
 };

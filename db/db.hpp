@@ -1,12 +1,8 @@
-#include <iostream>
-#include <string>
-#include <fstream>
-#include <map>
-#include "./kvnode.hpp"
-#include "./btnode.hpp"
-#include "./btree.hpp"
 #include "../dependencies/json.hpp"
 using json = nlohmann::json;
+
+#include "./kvnode.hpp"
+#include "./btree.hpp"
 
 class DB {
 private:
@@ -73,7 +69,7 @@ public:
         if (!checkTable(name))
             throw "table not exists!\n";
         KVNode node(key, value);
-        tables[name].update(key);
+        tables[name].update(node);
         return;
     }
 
@@ -93,16 +89,6 @@ public:
         return;
     }
 
-    json find(std::string key) {
-        if (!checkTable(name))
-            throw "table not exists!\n";
-        KVNode node(key);
-        auto result = tables[name].find(node);
-        if (result != NULL)
-            return result.value;
-        return NULL;
-    }
-
     int count() {
         if (!checkTable(name))
             throw "table not exists!\n";
@@ -116,14 +102,17 @@ public:
         return tables[name].exist(node);
     }
 
-    void traverse() {
+    json get(std::string key) {
         if (!checkTable(name))
             throw "table not exists!\n";
+        return tables[name].get(key);
+    }
 
+    void traverse() {
         std::cout << "\n\n";
 
-        for (auto it = tables.cbegin();
-                it != tables.cend(); it++) {
+        for (auto it = tables.begin();
+                it != tables.end(); it++) {
             std::cout << "\n";
             for (int i = 0; i < 60; ++i) {
                 std::cout << "#";
@@ -137,7 +126,7 @@ public:
 
     void dump(std::string path) {
         std::fstream out;
-        out.open(path, std::ios_base::out);
+        out.open(path, std::ios::out);
         dump(out);
         out.close();
         return;
@@ -147,8 +136,8 @@ public:
         json database;
         database["name"] = this->database;
         json _tables = json::array();
-        for (auto it = tables.cbegin();
-                it != tables.cend(); it++) {
+        for (auto it = tables.begin();
+                it != tables.end(); it++) {
             json table;
 
             table["name"] = it->first;
@@ -179,8 +168,8 @@ public:
 
             // insert into table for each recover data
             for (int j = 0; j < table["data"].size(); ++j) {
-                json item = table["data"][i];
-                tables[table["name"]].insert(item);
+                json item = table["data"][j];
+                tables[table["name"]].insert(KVNode(item["key"], item["value"]));
             }
         }
         return;
