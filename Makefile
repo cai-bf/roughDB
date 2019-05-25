@@ -18,7 +18,7 @@ serialization-test:
 	@$(P) -o tests/serialization tests/serialization_test.cpp
 	@./tests/serialization
 
-performance-test: order-test random-test
+performance-test: order-test random-test io-test
 
 order-test:
 	@$(P) -o tests/per-order tests/performance_order_test.cpp
